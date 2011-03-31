@@ -1,12 +1,64 @@
 <html>
   <head>
+    <style type="text/css">
+      #message {
+        width: 400px;
+      }
+      #messages {
+        height: 90%;
+        width: 90%;
+        margin: 0 5%;
+      }
+
+      .message {
+        padding: 5px;
+        clear: left;
+      }
+
+      .message:nth-child(odd) {
+        background: #eee;
+      }
+
+      .message.self {
+        background: #abc;
+      }
+
+      .name {
+        font-weight: bold;
+        display: block;
+        text-align: right;
+        float: left;
+        width: 100px;
+        margin-right: 10px;
+      }
+
+      .time {
+        border-top: 1px solid #333;
+        border-bottom: 1px solid #333;
+      }
+    </style>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="/nowjs/now.js"></script>
     <script type="text/javascript">
-      now.name = "Test";
+      now.name = prompt("Name?");
 
       now.receiveMessage = function(name, message) {
-        $("<div><strong>" + name + "</strong>"  + message + "</div>").appendTo($('#messages'));
+        addMessage("<div><span class=\"name\">" + name + ":</span> "  + message + "</div>");
+      }
+
+      now.timestamp = function() {
+        var time = new Date();
+        if( time.getMinutes() % 10 == 0 ) {
+          addMessage("<div class=\"time\">" + time.getHours() % 12 + ":" + time.getMinutes() + " " + (time.getHours() > 11 ? 'pm' : 'am') + "</div>");
+        }
+      }
+
+      now.ready(function() {
+        now.joined();
+      });
+
+      function addMessage(message) {
+        $(message).appendTo($('#messages'));
       }
       
       $(function() {
@@ -14,14 +66,23 @@
           now.distributeMessage($('#message').val());
           $('#message').val("");
         });
+
+        $('#message').keypress(function(evt) {
+          if( evt.which == '13') {
+            $('#send').click();
+          }
+        });
+
+        $('#message').focus();
       });
     </script>
   </head>
   <body>
     <div id="messages"></div>
 
-    <hr />
-    <input type="text" id="message">
-    <button id="send">Send</button>
+    <div id="controls">
+      <input type="text" id="message">
+      <button id="send">Send</button>
+    </div>
   </body>
 </html>
