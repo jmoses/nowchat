@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/nowjs/now.js"></script>
+    <script type="text/javascript">
+      now.name = "Test";
+
+      now.receiveMessage = function(name, message) {
+        $("<div><strong>" + name + "</strong>"  + message + "</div>").appendTo($('#messages'));
+      }
+      
+      $(function() {
+        $('#send').click(function() {
+          now.distributeMessage($('#message').val());
+          $('#message').val("");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="messages"></div>
+
+    <hr />
+    <input type="text" id="message">
+    <button id="send">Send</button>
+  </body>
+</html>
