@@ -37,12 +37,12 @@
         border-bottom: 1px solid #333;
       }
     </style>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/jquery-1.5.2.min.js"></script>
     <script type="text/javascript" src="/nowjs/now.js"></script>
     <script type="text/javascript">
-      now.name = prompt("Name?");
-
       now.receiveMessage = function(name, message) {
+        if( this.now.name == undefined ) { return; }
+
         addMessage("<div><span class=\"name\">" + name + ":</span> "  + message + "</div>");
       }
 
@@ -53,18 +53,21 @@
         }
       }
 
-      now.ready(function() {
-        now.joined();
-      });
-
       function addMessage(message) {
         $(message).appendTo($('#messages'));
       }
       
       $(function() {
         $('#send').click(function() {
-          now.distributeMessage($('#message').val());
-          $('#message').val("");
+          var msgText = $('#message').val();
+          if( msgText == '' ) { return; }
+
+          if( msgText.charAt(0) == '/' ) {
+            now.command( msgText.substring(1));
+          } else {
+            now.distributeMessage($('#message').val());
+            $('#message').val("");
+          }
         });
 
         $('#message').keypress(function(evt) {
@@ -73,16 +76,40 @@
           }
         });
 
-        $('#message').focus();
+        $('#signin_form').submit(function(e) {
+          e.preventDefault();
+
+          if( $('#name').val() != '' ) {
+            now.name = $('#name').val();
+            $('#signin').hide();
+            $('#app').show();
+            now.joined(now.name);
+            $('#message').focus();
+          }
+
+          return false;
+        });
+        
+        $('#name').focus();
       });
     </script>
   </head>
   <body>
-    <div id="messages"></div>
+    <div id="signin">
+      <h3>Who are you?</h3>
+      <form id="signin_form" action='#'>
+        <input type="text" id="name">
+        <input type="submit" value="Sign in">
+      </form>
+    </div>
 
-    <div id="controls">
-      <input type="text" id="message">
-      <button id="send">Send</button>
+    <div id="app" style="display: none;">
+      <div id="messages"></div>
+
+      <div id="controls">
+        <input type="text" id="message">
+        <button id="send">Send</button>
+      </div>
     </div>
   </body>
 </html>
