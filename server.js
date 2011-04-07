@@ -8,7 +8,7 @@ var server = require('http').createServer(function(req, res){
     file.serve(req, res);
   });
 });
-server.listen(80);
+server.listen(process.env['NODE_ENV'] == 'development' ? 8080 : 80);
 
 var everyone = require('now').initialize(server);
 var messages = [];
