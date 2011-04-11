@@ -43,10 +43,19 @@ everyone.now.joined = function(name) {
   _.each(messages, _.bind(function(message) {
     this.now.receiveMessage(message[0], message[1]);
   }, this));
-  this.now.receiveMessage("System", "Welcome, " + (name || this.now.name));
   members.push(name || this.now.name);
+  everyone.now.receiveMessage("System", (name || this.now.name) + " connected.");
   everyone.now.updateMembers(members);
 };
+
+everyone.disconnected = function() {
+  var idx = members.indexOf(this.now.name);
+  if( idx != -1 ) {
+    members.splice(idx, 1);
+  }
+  everyone.now.receiveMessage("System", this.now.name + " disconnected.");
+  everyone.now.updateMembers(members);
+}
 
 setInterval(function() {
   everyone.now.timestamp();

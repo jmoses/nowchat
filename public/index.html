@@ -74,6 +74,8 @@
       }
 
       now.updateMembers = function(members) {
+        $('#members div').remove();
+
         _.each(members, function(m) {
           $('<div class="member">' + m + "</div>").appendTo($('#members'));
         });
