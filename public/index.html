@@ -38,6 +38,10 @@
         background: #eee;
       }
 
+      .message:hover {
+        background: #ddd;
+      }
+
       .message.self {
         background: #abc;
       }
@@ -63,7 +67,7 @@
       now.receiveMessage = function(name, message) {
         if( this.now.name == undefined ) { return; }
 
-        addMessage("<div><span class=\"name\">" + name + ":</span> "  + message + "</div>");
+        addMessage("<div class=\"message\"><span class=\"name\">" + name + ":</span> "  + message + "</div>");
       }
 
       now.timestamp = function() {
@@ -94,8 +98,8 @@
             now.command( msgText.substring(1));
           } else {
             now.distributeMessage($('#message').val());
-            $('#message').val("");
           }
+          $('#message').val("");
         });
 
         $('#message').keypress(function(evt) {
