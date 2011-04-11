@@ -10,6 +10,7 @@ var server = require('http').createServer(function(req, res){
 });
 server.listen(process.env['NODE_ENV'] == 'development' ? 8080 : 80);
 
+var members = [];
 var everyone = require('now').initialize(server);
 var messages = [];
 var message_limit = 100;
@@ -29,6 +30,9 @@ everyone.now.command = function(command) {
     case 'time':
       this.now.receiveMessage('System', 'Time');
       break;
+    case 'who':
+      this.now.receiveMessage('Sytem', members.join(', '));
+      break;
     default:
       this.now.receiveMessage('System', 'Huh??');
       break;
@@ -40,6 +44,8 @@ everyone.now.joined = function(name) {
     this.now.receiveMessage(message[0], message[1]);
   }, this));
   this.now.receiveMessage("System", "Welcome, " + (name || this.now.name));
+  members.push(name || this.now.name);
+  everyone.now.updateMembers(members);
 };
 
 setInterval(function() {

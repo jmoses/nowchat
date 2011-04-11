@@ -6,8 +6,27 @@
       }
       #messages {
         height: 90%;
-        width: 90%;
+        width: 80%;
         margin: 0 5%;
+        float: left;
+      }
+
+      #members {
+        width: 10%;
+        margin: 0;
+        float: right;
+      }
+
+      #members .member {
+        font-weight: bold;
+      }
+
+      #members .member:hover {
+        text-decoration: underline;
+      }
+
+      #controls {
+        clear: left;
       }
 
       .message {
@@ -38,6 +57,7 @@
       }
     </style>
     <script type="text/javascript" src="/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="/underscore.js"></script>
     <script type="text/javascript" src="/nowjs/now.js"></script>
     <script type="text/javascript">
       now.receiveMessage = function(name, message) {
@@ -51,6 +71,12 @@
         if( time.getMinutes() % 10 == 0 ) {
           addMessage("<div class=\"time\">" + time.getHours() % 12 + ":" + time.getMinutes() + " " + (time.getHours() > 11 ? 'pm' : 'am') + "</div>");
         }
+      }
+
+      now.updateMembers = function(members) {
+        _.each(members, function(m) {
+          $('<div class="member">' + m + "</div>").appendTo($('#members'));
+        });
       }
 
       function addMessage(message) {
@@ -105,6 +131,7 @@
 
     <div id="app" style="display: none;">
       <div id="messages"></div>
+      <div id="members"></div>
 
       <div id="controls">
         <input type="text" id="message">
