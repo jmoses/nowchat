@@ -28,23 +28,27 @@ everyone.now.distributeMessage = function(message) {
 everyone.now.command = function(command) {
   switch(command) {
     case 'time':
-      this.now.receiveMessage('System', 'Time');
-      break;
-    case 'who':
-      this.now.receiveMessage('Sytem', members.join(', '));
+      this.now.systemMessage('Time');
       break;
     default:
-      this.now.receiveMessage('System', 'Huh??');
+      this.now.systemMessage('Huh??');
       break;
   }
 }
 
 everyone.now.joined = function(name) {
+  if( _.indexOf(members, name) != -1 ) {
+    this.now.systemMessage("That name is already taken.");
+    this.now.kick();
+    return;
+  }
+
   _.each(messages, _.bind(function(message) {
     this.now.receiveMessage(message[0], message[1]);
   }, this));
+
   members.push(name || this.now.name);
-  everyone.now.receiveMessage("System", (name || this.now.name) + " connected.");
+  everyone.now.systemMessage((name || this.now.name) + " connected.");
   everyone.now.updateMembers(members);
 };
 
@@ -53,7 +57,7 @@ everyone.disconnected = function() {
   if( idx != -1 ) {
     members.splice(idx, 1);
   }
-  everyone.now.receiveMessage("System", this.now.name + " disconnected.");
+  everyone.now.systemMessage(this.now.name + " disconnected.");
   everyone.now.updateMembers(members);
 }
 

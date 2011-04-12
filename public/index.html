@@ -46,6 +46,10 @@
         background: #abc;
       }
 
+      .message.system {
+        color: #800;
+      }
+
       .name {
         font-weight: bold;
         display: block;
@@ -70,6 +74,10 @@
         addMessage("<div class=\"message\"><span class=\"name\">" + name + ":</span> "  + message + "</div>");
       }
 
+      now.systemMessage = function(message) {
+        addMessage('<div class="message system"><span class=\"name\">System:</span>' + message + '</div>');
+      }
+
       now.timestamp = function() {
         var time = new Date();
         if( time.getMinutes() % 10 == 0 ) {
@@ -83,6 +91,11 @@
         _.each(members, function(m) {
           $('<div class="member">' + m + "</div>").appendTo($('#members'));
         });
+      }
+
+      now.kick = function() {
+        $('#app').hide();
+        $('#signin').show();
       }
 
       function addMessage(message) {
