@@ -2,7 +2,8 @@ var fs = require('fs'),
     _ = require('underscore'),
     static = require('node-static'),
     file = new(static.Server)('./public'),
-    nowjs = require('now');
+    nowjs = require('now'),
+    redis = require('redis');
 
 var server = require('http').createServer(function(req, res){
   req.addListener('end', function() {
@@ -13,8 +14,28 @@ server.listen(process.env['NODE_ENV'] == 'development' ? 8080 : 80);
 
 var members = [];
 var everyone = nowjs.initialize(server);
-var messages = [];
 var message_limit = 100;
+
+var redisClient = redis.createClient();
+redisClient.on("error", function(err) {
+  console.log("Error " + err);
+});
+
+var globalRoomKey = "chatty:rooms:global";
+
+function pushMessage(name, message) {
+  console.log("Pushing message to redis from " + name + ": " + message );
+  redisClient.lpush(globalRoomKey, JSON.stringify([name, message]), trimMessages );
+}
+
+function trimMessages() {
+  console.log("Trimming redis messages");
+  redisClient.ltrim(globalRoomKey, 0, message_limit)
+}
+
+function getMessages(callback) {
+  redisClient.lrange(globalRoomKey, 0, -1, callback)
+}
 
 var loggedInUsers = nowjs.getGroup("loggedInUsers");
 var anonymousUsers = nowjs.getGroup("anonymousUsers");
@@ -22,10 +43,7 @@ var anonymousUsers = nowjs.getGroup("anonymousUsers");
 everyone.now.distributeMessage = function(message) {
   if( _.isUndefined(this.now.name) ) { return; }
 
-  messages.push([this.now.name, message]);
-  if( messages.length > message_limit ) {
-    messages = messages[messages.length - message_limit-1, messages.length-1];
-  }
+  pushMessage(this.now.name, message);
   loggedInUsers.now.receiveMessage(this.now.name, message);
 };
 
@@ -46,9 +64,16 @@ everyone.now.joined = function(name) {
     return;
   }
 
-  _.each(messages, _.bind(function(message) {
-    this.now.receiveMessage(message[0], message[1]);
-  }, this));
+  getMessages(_.bind(function(err, replies) {
+    console.log("Got messages from redis on join: " + messages);
+    if( replies == null || replies == undefined ) { return; };
+    var messages = _.map(replies, function(reply) { return JSON.parse(reply); } );
+
+    _.each(messages.reverse(), _.bind(function(message) {
+
+      this.receiveMessage(message[0], message[1]);
+    }, this));
+  }, this.now));
 
   members.push(name || this.now.name);
   loggedInUsers.addUser(this.user.clientId);
