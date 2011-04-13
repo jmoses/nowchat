@@ -1,148 +1,16 @@
 <html>
   <head>
-    <style type="text/css">
-      #message {
-        width: 400px;
-      }
-      #messages {
-        height: 90%;
-        width: 80%;
-        margin: 0 5%;
-        float: left;
-      }
-
-      #members {
-        width: 10%;
-        margin: 0;
-        float: right;
-      }
-
-      #members .member {
-        font-weight: bold;
-      }
-
-      #members .member:hover {
-        text-decoration: underline;
-      }
-
-      #controls {
-        clear: left;
-      }
-
-      .message {
-        padding: 5px;
-        clear: left;
-      }
-
-      .message:nth-child(odd) {
-        background: #eee;
-      }
-
-      .message:hover {
-        background: #ddd;
-      }
-
-      .message.self {
-        background: #abc;
-      }
-
-      .message.system {
-        color: #800;
-      }
-
-      .name {
-        font-weight: bold;
-        display: block;
-        text-align: right;
-        float: left;
-        width: 100px;
-        margin-right: 10px;
-      }
-
-      .time {
-        border-top: 1px solid #333;
-        border-bottom: 1px solid #333;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
     <script type="text/javascript" src="/jquery-1.5.2.min.js"></script>
     <script type="text/javascript" src="/underscore.js"></script>
     <script type="text/javascript" src="/nowjs/now.js"></script>
-    <script type="text/javascript">
-      now.receiveMessage = function(name, message) {
-        if( this.now.name == undefined ) { return; }
-
-        addMessage("<div class=\"message\"><span class=\"name\">" + name + ":</span> "  + message + "</div>");
-      }
-
-      now.systemMessage = function(message) {
-        addMessage('<div class="message system"><span class=\"name\">System:</span>' + message + '</div>');
-      }
-
-      now.timestamp = function() {
-        var time = new Date();
-        if( time.getMinutes() % 10 == 0 ) {
-          addMessage("<div class=\"time\">" + time.getHours() % 12 + ":" + time.getMinutes() + " " + (time.getHours() > 11 ? 'pm' : 'am') + "</div>");
-        }
-      }
-
-      now.updateMembers = function(members) {
-        $('#members div').remove();
-
-        _.each(members, function(m) {
-          $('<div class="member">' + m + "</div>").appendTo($('#members'));
-        });
-      }
-
-      now.kick = function() {
-        $('#app').hide();
-        $('#signin').show();
-      }
-
-      function addMessage(message) {
-        $(message).appendTo($('#messages'));
-      }
-      
-      $(function() {
-        $('#send').click(function() {
-          var msgText = $('#message').val();
-          if( msgText == '' ) { return; }
-
-          if( msgText.charAt(0) == '/' ) {
-            now.command( msgText.substring(1));
-          } else {
-            now.distributeMessage($('#message').val());
-          }
-          $('#message').val("");
-        });
-
-        $('#message').keypress(function(evt) {
-          if( evt.which == '13') {
-            $('#send').click();
-          }
-        });
-
-        $('#signin_form').submit(function(e) {
-          e.preventDefault();
-
-          if( $('#name').val() != '' ) {
-            now.name = $('#name').val();
-            $('#signin').hide();
-            $('#app').show();
-            now.joined(now.name);
-            $('#message').focus();
-          }
-
-          return false;
-        });
-        
-        $('#name').focus();
-      });
-    </script>
+    <script type="text/javascript" src="/client.js"></script>
   </head>
   <body>
     <div id="signin">
       <h3>Who are you?</h3>
       <form id="signin_form" action='#'>
+        <div id="kickmessage"></div>
         <input type="text" id="name">
         <input type="submit" value="Sign in">
       </form>

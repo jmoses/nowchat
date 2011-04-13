@@ -1,0 +1,62 @@
+#message {
+  width: 400px;
+}
+#messages {
+  height: 90%;
+  width: 80%;
+  margin: 0 5%;
+  float: left;
+}
+
+#members {
+  width: 10%;
+  margin: 0;
+  float: right;
+}
+
+#members .member {
+  font-weight: bold;
+}
+
+#members .member:hover {
+  text-decoration: underline;
+}
+
+#controls {
+  clear: left;
+}
+
+.message {
+  padding: 5px;
+  clear: left;
+}
+
+.message:nth-child(odd) {
+  background: #eee;
+}
+
+.message:hover {
+  background: #ddd;
+}
+
+.message.self {
+  background: #abc;
+}
+
+.message.system {
+  color: #800;
+}
+
+.name {
+  font-weight: bold;
+  display: block;
+  text-align: right;
+  float: left;
+  width: 100px;
+  margin-right: 10px;
+}
+
+.time {
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
